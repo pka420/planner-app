@@ -1,0 +1,44 @@
+{
+  "classes": {
+    "1": { "title": "GE2", "teacher": "Anon" },
+    "2": { "title": "Compiler Design", "teacher": "Prof. Ranjan Kumar" },
+    "3": { "title": "Digital Image Processing", "teacher": "Neha Kumari" },
+    "4": { "title": "GE1", "teacher": "Anon" }
+    },
+
+  "time": 
+        {
+  "Monday": [
+    { "id": "4", "time": "08:00", "type": "lecture" },
+    { "id": "1", "time": "09:00", "type": "lecture" },
+    { "id": "2", "time": "10:00", "type": "lecture" },
+    { "id": "2", "time": "11:00", "type": "lab" },
+    { "id": "3", "time": "13:00", "type": "lecture" }
+  ],
+  "Tuesday": [
+    { "id": "4", "time": "08:00", "type": "lecture" },
+    { "id": "1", "time": "09:00", "type": "lecture" },
+    { "id": "2", "time": "10:00", "type": "lecture" },
+    { "id": "2", "time": "11:00", "type": "lab" },
+    { "id": "3", "time": "13:00", "type": "lecture" }
+  ],
+  "Wednesday": [
+    { "id": "4", "time": "08:00", "type": "lecture" },
+    { "id": "2", "time": "11:00", "type": "lab" },
+    { "id": "3", "time": "13:00", "type": "lecture" }
+  ],
+  "Thursday": [
+    { "id": "4", "time": "08:00", "type": "lecture" },
+    { "id": "3", "time": "09:00", "type": "lab" },
+    { "id": "3", "time": "10:00", "type": "lab" },
+    { "id": "2", "time": "11:00", "type": "lecture" }
+  ],
+  "Friday": [
+    { "id": "4", "time": "08:00", "type": "lecture" },
+    { "id": "1", "time": "11:00", "type": "lecture" },
+    { "id": "2", "time": "13:00", "type": "lab" }
+  ]
+}
+
+}
+
