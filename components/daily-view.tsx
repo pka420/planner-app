@@ -5,8 +5,8 @@ import type { ScheduleData, Slot } from "@/lib/types"
 import { dayNames, parseTimeRange, minutesNowLocal } from "@/lib/time"
 
 export function DailyView({ data }: { data: ScheduleData }) {
-  const todayIdx = new Date().getDay() // 0-6
-  const defaultDay = todayIdx === 0 ? 1 : todayIdx // default to Monday when Sunday
+  const todayIdx = new Date().getDay() 
+  const defaultDay = todayIdx === 0 ? 1 : todayIdx 
   const [activeDay, setActiveDay] = useState<number>(() => {
     if (typeof window === "undefined") return defaultDay
     const saved = window.localStorage.getItem("active-day")
@@ -71,8 +71,9 @@ export function DailyView({ data }: { data: ScheduleData }) {
   })
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+    <div className="flex flex-col gap-6 p-4">
+      {/* Day Selection */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2">
         {[1, 2, 3, 4, 5, 6].map((d) => {
           const isToday = d === (todayIdx === 0 ? 1 : todayIdx)
           const active = d === activeDay
@@ -80,15 +81,21 @@ export function DailyView({ data }: { data: ScheduleData }) {
             <button
               key={d}
               onClick={() => setActiveDay(d)}
-              className={`relative rounded-full px-3 py-1.5 text-xs font-medium ${
-                active ? "bg-teal-600 text-white" : "bg-gray-900 text-gray-300 hover:bg-gray-800"
+              className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 shadow-md ${
+                active 
+                  ? "bg-primary text-primary-foreground shadow-autumn-glow" 
+                  : "bg-card text-card-foreground hover:bg-muted border border-border"
               }`}
               aria-pressed={active}
             >
               {dayNames[d].slice(0, 3)}
               {isToday && (
                 <span
-                  className={`ml-2 rounded-full px-2 py-0.5 text-[10px] ${active ? "bg-white/20 text-white" : "bg-gray-700 text-gray-100"}`}
+                  className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${
+                    active 
+                      ? "bg-primary-foreground/20 text-primary-foreground" 
+                      : "bg-accent text-accent-foreground"
+                  }`}
                 >
                   Today
                 </span>
@@ -98,48 +105,94 @@ export function DailyView({ data }: { data: ScheduleData }) {
         })}
       </div>
 
-      <div className="rounded-md border border-gray-700 bg-gray-900 px-4 py-2 text-sm">
-        <span className="mr-2 inline-flex h-2 w-2 rounded-full bg-teal-500 align-middle" />
-          <NextUp data={data} enriched={enriched} now={now} />
-      </div>
+      {/* Current Class Status */}
+      {activeDay === todayIdx && currentIdx !== -1 && (
+        <div className="rounded-lg border border-accent/30 bg-gradient-to-r from-accent/10 to-accent/5 px-4 py-3 shadow-golden-glow">
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-3 rounded-full bg-accent animate-pulse shadow-sm" />
+            <NextUp data={data} enriched={enriched} now={now} />
+          </div>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-3">
+      {/* Schedule List */}
+      <div className="flex flex-col gap-4">
         {enriched.map((s, i) => {
           const [st, en] = parseTimeRange(s.time)
           const isCurrent = s.title !== "Free Period" && now >= st && now < en
           const isPast = now >= en
           const isFree = s.title === "Free Period"
+          const isLab = s.type === "lab"
+          
           return (
             <div
               key={`${s.title}-${s.time}-${i}`}
-              className={[
-                "rounded-xl border px-4 py-3 transition-colors",
-                "border-gray-800 bg-gray-900",
-                isPast && !isCurrent ? "opacity-50" : "",
-                isCurrent ? "ring-2 ring-amber-400 bg-amber-500/15" : "",
-              ].join(" ")}
+              className={`rounded-xl border px-5 py-4 transition-all duration-300 ${
+                isFree 
+                  ? "border-muted bg-muted/50 text-muted-foreground" 
+                  : isLab
+                    ? "border-secondary bg-gradient-to-r from-secondary/20 to-secondary/10 text-foreground shadow-md"
+                    : "border-border bg-card text-card-foreground shadow-md"
+              } ${
+                activeDay === todayIdx ? `
+                  ${isPast && !isCurrent ? "opacity-60" : ""}
+                  ${isCurrent ? "ring-2 ring-accent bg-accent/10 shadow-golden-glow" : ""}
+                ` : ""
+              }`}
             >
               <div className="flex items-start gap-4">
-                <div className="mt-0.5 shrink-0 rounded-full bg-gray-800 px-2 py-0.5 text-[11px] text-gray-200">
+                {/* Time Badge */}
+                <div className={`mt-1 shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
+                  isFree 
+                    ? "bg-muted text-muted-foreground"
+                    : "bg-primary/10 text-primary border border-primary/20"
+                }`}>
                   {s.time}
                 </div>
+
+                {/* Content */}
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className={`h-5 w-1.5 rounded-full ${isFree ? "bg-gray-600" : "bg-teal-500"}`} />
-                    <h3 className="truncate text-md font-semibold text-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    {/* Status Indicator */}
+                    <div className={`h-6 w-2 rounded-full ${
+                      isFree 
+                        ? "bg-muted-foreground/40" 
+                        : isLab
+                          ? "bg-secondary"
+                          : isCurrent
+                            ? "bg-accent"
+                            : "bg-primary"
+                    }`} />
+                    
+                    {/* Title */}
+                    <h3 className="truncate text-lg font-semibold">
                       {data.classes[s.id] && <div>{data.classes[s.id].title}</div>}
-                      {isFree && <div className="italic text-gray-400">Free Period</div>}
-                                        </h3>
+                      {isFree && <div className="italic opacity-75">Free Period</div>}
+                    </h3>
                   </div>
-                  {s.room || s.teacher || s.type || isFree ? (
+
+                  {/* Details */}
+                  {(s.room || s.teacher || s.type || isFree) && (
                     <div className="flex items-center justify-between">
-                    <div className="mt-1 space-y-0.5 text-[12px] leading-5 text-gray-300">
-                      {s.room && <div>{s.room}</div>}
-                      {data.classes[s.id] && <div>{data.classes[s.id].teacher}</div>}
+                      <div className="space-y-1 text-sm opacity-80">
+                        {s.room && <div className="flex items-center gap-2">
+                          {s.room}
+                        </div>}
+                        {data.classes[s.id] && <div className="flex items-center gap-2">
+                          {data.classes[s.id].teacher}
+                        </div>}
                       </div>
-                      {s.type && !isFree && <div className="text-gray-400 text-sm font-semibold float-right">{s.type}</div>}
+                      {s.type && !isFree && (
+                        <div className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          isLab 
+                            ? "bg-secondary text-secondary-foreground"
+                            : "bg-accent/20 text-accent-foreground"
+                        }`}>
+                          {s.type}
+                        </div>
+                      )}
                     </div>
-                  ) : null}
+                  )}
                 </div>
               </div>
             </div>
@@ -150,10 +203,9 @@ export function DailyView({ data }: { data: ScheduleData }) {
   )
 }
 
-export function NextUp({ data, enriched, now }: { data: {}, enriched: Slot[]; now: number }) {
+export function NextUp({ data, enriched, now }: { data: any, enriched: Slot[]; now: number }) {
   let ongoing: Slot | null = null
   let next: Slot | null = null
-
 
   for (const s of enriched) {
     const [st, et] = parseTimeRange(s.time)
@@ -168,22 +220,21 @@ export function NextUp({ data, enriched, now }: { data: {}, enriched: Slot[]; no
 
   if (ongoing) {
     return (
-      <span className="text-gray-100">
-        <span className="font-semibold">{data.classes[ongoing.id].title}</span> 
+      <span className="text-foreground">
+        Currently in: <span className="font-semibold text-accent">{data.classes[ongoing.id]?.title}</span>
       </span>
     )
   }
 
   if (next) {
     return (
-      <span className="text-gray-100">
-        No current class - Next:{" "}
-        <span className="font-semibold">{next.title}</span> at {next.time.split("-")[0]}
+      <span className="text-foreground">
+        No current class - Next: <span className="font-semibold text-primary">{next.title}</span> at {next.time.split("-")[0]}
       </span>
     )
   }
 
-  return <span className="text-gray-100">No more classes today</span>
+  return <span className="text-foreground">No more classes today - Enjoy your free time! ✨</span>
 }
 
 function toLabel(minutes: number) {
@@ -193,4 +244,3 @@ function toLabel(minutes: number) {
   const pad = String(m).padStart(2, "0")
   return `${hh}:${pad}`
 }
-

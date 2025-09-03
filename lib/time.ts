@@ -13,6 +13,6 @@ export function toMinutes(t: string): number {
 
 export function minutesNowLocal(): number {
   const n = new Date()
-  return n.getHours() * 60 + n.getMinutes() - 720
+  return n.getHours() * 60 + n.getMinutes()
 }
 
