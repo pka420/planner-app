@@ -11,8 +11,6 @@ import { MonthlyView } from "./monthly-view"
 import { WeeklyView } from "./weekly-view"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 import type { PlannerData } from "@/lib/types"
-import { useTheme } from "next-themes"
-
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -26,8 +24,6 @@ export default function ClientApp() {
   const { data, error, isLoading, mutate } = useSWR<PlannerData>(dataUrl, fetcher, {
     revalidateOnFocus: false,
   })
-    const { setTheme } = useTheme();
-    setTheme("light");
 
   useEffect(() => {
     mutate()
