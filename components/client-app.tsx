@@ -20,7 +20,7 @@ export default function ClientApp() {
   const [dataset, setDataset] = useLocalStorage<string>("planner_dataset", "dse")
   const [view, setView] = useLocalStorage<ViewMode>("planner_view", "daily")
 
-  const dataUrl = useMemo(() => `/data/${dataset}.json`, [dataset])
+  const dataUrl = useMemo(() => `/static-data/${dataset}.json`, [dataset])
   const { data, error, isLoading, mutate } = useSWR<PlannerData>(dataUrl, fetcher, {
     revalidateOnFocus: false,
   })
